@@ -21,14 +21,14 @@ jobs:
 
       # 3. Construire et lancer les conteneurs (comme vous le faites en local)
       - name: Build and start containers
-        run: docker-compose up -d --build
+        run: docker compose up -d --build
 
       # 4. Attendre que MySQL soit prêt (important avant les tests)
       - name: Wait for MySQL
         run: |
           echo "Waiting for MySQL to be ready..."
           for i in {1..30}; do
-            if docker-compose exec -T db mysqladmin ping -h db -u root -p'' --silent; then
+            if docker compose exec -T db mysqladmin ping -h db -u root -p'' --silent; then
               echo "MySQL is ready!"
               break
             fi
