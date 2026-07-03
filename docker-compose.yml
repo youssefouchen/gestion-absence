@@ -1,0 +1,37 @@
+
+
+services:
+  web:
+    build: .
+    container_name: absence_web
+    ports:
+      - "8080:80"               # Accès via http://localhost:8080
+    volumes:
+      - .:/var/www/html          # Monte tout le projet pour le développement
+      # Si tu veux isoler le dossier uploads :
+      # - ./assets/uploads:/var/www/html/assets/uploads
+    environment:
+      DB_HOST: db
+      DB_USER: user_absence
+      DB_PASSWORD: secret_absence
+      DB_NAME: gestion_absences
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  db:
+    image: mysql:8.0
+    container_name: absence_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: gestion_absences
+      MYSQL_USER: user_absence
+      MYSQL_PASSWORD: secret_absence
+    ports:
+      - "3308:3306"             # Évite les conflits avec un MySQL local
+    volumes:
+      - db_data:/var/lib/mysql   # Persistance des données
+
+volumes:
+  db_data:

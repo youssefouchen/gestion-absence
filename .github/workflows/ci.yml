@@ -1,0 +1,58 @@
+name: CI - Build and Test
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Récupérer le code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Installer Docker Compose (déjà présent sur l'agent, mais on vérifie)
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # 3. Construire et lancer les conteneurs (comme vous le faites en local)
+      - name: Build and start containers
+        run: docker-compose up -d --build
+
+      # 4. Attendre que MySQL soit prêt (important avant les tests)
+      - name: Wait for MySQL
+        run: |
+          echo "Waiting for MySQL to be ready..."
+          for i in {1..30}; do
+            if docker-compose exec -T db mysqladmin ping -h db -u root -p'' --silent; then
+              echo "MySQL is ready!"
+              break
+            fi
+            sleep 2
+          done
+
+      # 5. Attendre que Apache/PHP soit prêt
+      - name: Wait for Web
+        run: |
+          echo "Waiting for Web server..."
+          for i in {1..20}; do
+            if curl -f http://localhost:8080; then
+              echo "Web server is ready!"
+              break
+            fi
+            sleep 2
+          done
+
+      # 6. Test simple : vérifier que la page de login s'affiche (200 OK)
+      - name: Test login page
+        run: |
+          curl -f http://localhost:8080/login.php || exit 1
+
+      # 7. (Optionnel) Afficher les logs si la pipeline échoue
+      - name: Show logs on failure
+        if: failure()
+        run: docker-compose logs

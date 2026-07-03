@@ -1,0 +1,10 @@
+type;alias;nom;debut;fin;filiere_alias;code;titre;niveau;module_code
+filiere;GC;Génie Civil;2024;2029;;;;
+classe;;GC1;;;GC;;;
+classe;;GC2;;;GC;;;
+module;;;;;GC;GC101;Matériaux de construction;S1;
+module;;;;;GC;GC102;Mécanique des sols;S2;
+element;;;;;;GC101;Béton armé;;;
+element;;;;;;GC101;Acier;;;
+element;;;;;;GC102;Fondations;;;
+element;;;;;;GC102;Stabilité des pentes;;;
